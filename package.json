@@ -1,0 +1,17 @@
+{
+  "name": "phantom-free-hunter",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Aggressively hunts the internet for free stuff (games, software, courses, AI tools, giveaways, digital assets, student offers, cloud credits) and sends Telegram alerts. Nigeria-focused, worldwide coverage.",
+  "scripts": {
+    "dev": "vercel dev",
+    "test:local": "node scripts/test-local.js"
+  },
+  "dependencies": {
+    "@upstash/redis": "^1.34.3",
+    "rss-parser": "^3.13.0"
+  },
+  "engines": {
+    "node": ">=18.x"
+  }
+}
