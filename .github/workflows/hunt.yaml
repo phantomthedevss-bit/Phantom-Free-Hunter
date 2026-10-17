@@ -1,0 +1,37 @@
+name: Phantom Free Hunter - 5min scan
+
+on:
+  schedule:
+    # GitHub Actions cron is UTC and best-effort (can slip a few minutes
+    # under load, but reliably fires every 5 min on average).
+    - cron: "*/5 * * * *"
+  workflow_dispatch: {} # lets you trigger a run manually from the Actions tab
+
+jobs:
+  hunt:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Call the hunt endpoint
+        env:
+          HUNT_URL: ${{ secrets.HUNT_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$HUNT_URL" ] || [ -z "$CRON_SECRET" ]; then
+            echo "::error::Missing HUNT_URL or CRON_SECRET repository secret."
+            exit 1
+          fi
+
+          http_code=$(curl -s -o response.json -w "%{http_code}" \
+            --max-time 90 \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "$HUNT_URL")
+
+          echo "HTTP status: $http_code"
+          echo "Response body:"
+          cat response.json
+
+          if [ "$http_code" -ge 400 ]; then
+            echo "::error::Hunt endpoint returned $http_code"
+            exit 1
+          fi
